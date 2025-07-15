@@ -118,8 +118,41 @@ if myfile :
     predicted_usage = model.predict(X_tomorrow)
     total_predicted_kwh = round(sum(predicted_usage), 2)
 
-    st.subheader("Predicted Total Energy Usage for Tomorrow")
+    tomorrow_name = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime("%A")
+
+    st.subheader(f"Predicted Total Energy Usage for {tomorrow_name}")
+
     st.metric(label="Estimated kWh", value=f"{total_predicted_kwh} kWh")
+
+    #suggestions part !!!!
+
+    df_pred = pd.DataFrame({
+    "Hour": hours,
+    "Predicted_kWh": predicted_usage
+    })
+
+   
+    high_threshold = df_pred["Predicted_kWh"].quantile(0.75)  # picking top 25%
+    low_threshold = df_pred["Predicted_kWh"].quantile(0.25)   # picking lowest 25%
+
+    high_usage = df_pred[df_pred["Predicted_kWh"] > high_threshold]
+
+    low_usage = df_pred[df_pred["Predicted_kWh"] < low_threshold]
+
+    suggestions = []
+    
+    if not high_usage.empty:
+     peak_hour_range = f"{high_usage['Hour'].min():02d}:00 – {high_usage['Hour'].max():02d}:00"
+     suggestions.append(f" High energy usage between {peak_hour_range}. Consider reducing appliance use.")
+
+    if not low_usage.empty:
+     low_hour_range = f"{low_usage['Hour'].min():02d}:00 – {low_usage['Hour'].max():02d}:00"
+     suggestions.append(f"Low energy demand between {low_hour_range}. U dont need need to consider here.")
+
+    st.subheader("AI Smart Suggestions for Energy Saving")
+
+    for tip in suggestions:
+     st.markdown(f"- {tip}")
 
 
 
