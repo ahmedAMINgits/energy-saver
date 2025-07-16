@@ -17,13 +17,13 @@ if myfile :
     today=datetime.datetime.today().strftime("%A")# getting todays name to be used as default*
 
 
-    specific_col= [col for col in df.columns if col not in ["Day","Time","Total Consumption (kWh)","Date"] ]
+    specific_col= [col for col in df.columns if col not in ["Day","Time","Total Consumption (kWh)","Date"] ] #basically separating appliance columns
 
 
 ## the bar chart portion 
 
     st.subheader("Stacked Bar Chart: Appliance Usage by Hour") 
-    week_day = df['Day'].unique().tolist() #it creats a list of days to be used in the dropdown 
+    week_day = df['Day'].unique().tolist() #it creats a list of days to be used in the dropdown (if user wants to see another days usages)
 
     selected_day= st.selectbox("Select the day for bar chart",week_day,index=week_day.index(today) if today in week_day else 0 ) #basically a dropdown box user can select a specific day by default itll show today's day
 
@@ -41,14 +41,14 @@ if myfile :
              labels={"Usage":"kWh"} 
 
              )
-    bar.update_layout(barmode="stack")# idk its not working 
+    bar.update_layout(barmode="stack") 
     bar.update_layout(title_x=0.5, xaxis=dict(dtick=1), legend_title_text='Appliances')
     st.plotly_chart(bar, use_container_width=True)
 
 
 
 #pie chart portion 
-    st.subheader("Pie Chart: Appliance Usage by Hour") 
+    st.subheader("Pie Chart: Appliance Usage Share") 
 
     selected_din=st.selectbox("Select the day for the pie chart",week_day,index=week_day.index(today) if today in week_day else 0)
     selected_din2= df[df["Day"]==selected_din]
